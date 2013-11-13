@@ -32,7 +32,6 @@ public class BotListener extends ListenerAdapter {
                 event.getBot().sendIRC().message("nickserv", "identify " + Main.config.getBotPassword());
             }
             if(command.equalsIgnoreCase("raw")){
-                event.getBot().sendRaw().rawLine(messageArr[1]);
                 StringBuilder sb = new StringBuilder();
                 //loop through all the arguments
                 for(int i = 1; i < messageArr.length; i++){
