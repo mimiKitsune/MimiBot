@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         config = new Config();
+        config.load();
         //Setup Logger
         System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
         System.setProperty(SimpleLogger.DATE_TIME_FORMAT_KEY, "[HH:mm:ss]");
