@@ -3,3 +3,4 @@ bot.conf
 target/
 .git/
 *.iml
+out/

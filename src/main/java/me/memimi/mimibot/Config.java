@@ -27,20 +27,23 @@ public class Config {
     private String trigger;
     private List<String> channels;
     private Logger logger = new SimpleLoggerFactory().getLogger(this.getClass().getName());
+    private String serverPassword;
+
     public void load() throws IOException {
         Properties properties = new Properties();
         File config = new File("bot.conf");
-        if(!config.exists()){
+        if (!config.exists()) {
             logger.warn("Config not found, creating example config");
             //get bot.conf from the jar, and make a reader to read from it
             BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/bot.conf")));
             //make an empty config file
+            //noinspection ResultOfMethodCallIgnored
             config.createNewFile();
             //make a writer to write lines to the config
             PrintWriter writer = new PrintWriter(new FileWriter(config));
-            String line = "";
+            String line;
             //while we can read lines without them being null (end of file)
-            while((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 //write the line to the empty config
                 writer.println(line);
             }
@@ -58,6 +61,7 @@ public class Config {
         this.setChannels(Arrays.asList(properties.getProperty("channels").split(" ")));
         this.setServerHostname(properties.getProperty("serverHostname"));
         this.setServerPort(Integer.parseInt(properties.getProperty("serverPort")));
+        this.setServerPassword(properties.getProperty("serverPassword"));
     }
 
     public List<String> getChannels() {
@@ -130,5 +134,14 @@ public class Config {
 
     public void setTrigger(String trigger) {
         this.trigger = trigger;
+    }
+
+
+    public void setServerPassword(String serverPassword) {
+        this.serverPassword = serverPassword;
+    }
+
+    public String getServerPassword() {
+        return serverPassword;
     }
 }

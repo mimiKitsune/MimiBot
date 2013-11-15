@@ -1,8 +1,10 @@
 package me.memimi.mimibot;
 
+import org.pircbotx.User;
 import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.ConnectEvent;
 import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.PrivateMessageEvent;
+import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.impl.SimpleLoggerFactory;
 
@@ -20,27 +22,30 @@ public class BotListener extends ListenerAdapter {
 
     @Override
     public void onMessage(MessageEvent event) {
-        if (event.getUser().getHostmask().endsWith("memimi.me") && event.getMessage().startsWith(Main.config.getTrigger())) {
-            String message = event.getMessage().substring(1);
-            String[] messageArr = message.split(" ", 2);
-            String command = messageArr[0];
-            if(command.equalsIgnoreCase("reg")){
-                event.getBot().sendIRC().message("nickserv", "register 5c1C'7CB mimibot@memimi.me");
-                event.respond("registering with nickserv");
-            }
-            if(command.equalsIgnoreCase("identify")){
-                event.getBot().sendIRC().message("nickserv", "identify " + Main.config.getBotPassword());
-            }
-            if(command.equalsIgnoreCase("raw")){
-                StringBuilder sb = new StringBuilder();
-                //loop through all the arguments
-                for(int i = 1; i < messageArr.length; i++){
-                     //append each element of messageArr from index 1 until the end to the stringbuilder, followed by a space
-                     sb.append(messageArr[i]).append(" ");
-                }
-                //send the stringbuilder.tostring, but remove any trailing spaces.
-                event.getBot().sendRaw().rawLineNow(sb.toString().trim());
-            }
+        String message = event.getMessage();
+        if (message.startsWith(Main.getConfig().getTrigger()) && hasPermissions(event.getUser())) {
+            String[] messageArr = event.getMessage().substring(1).split(" ");
+            String command = messageArr[0].toLowerCase();
+            executeCommand(event, command);
+        }
+    }
+
+    private void executeCommand(GenericMessageEvent event, String command) {
+        if (Main.commands.containsKey(command)) {
+            Main.commands.get(command).run(event);
+        }
+    }
+
+    private boolean hasPermissions(User user) {
+        return user.getHostmask().endsWith("memimi.me") || user.getHostmask().endsWith("zack6849.com");
+    }
+
+
+    @Override
+    public void onPrivateMessage(PrivateMessageEvent event) {
+        if (hasPermissions(event.getUser())) {
+            String command = event.getMessage().split(" ")[0];
+            executeCommand(event, command);
         }
     }
 
